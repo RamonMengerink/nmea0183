@@ -2,7 +2,7 @@
 
 ## Description
 
-This Arduino sketch demonstrates serial communication between two devices using the Serial library. It is designed to work with an LCD display driven by the `LCDWIKI_KBV` library.
+This Arduino sketch is designed to view NMEA0183 serial data of different baud rates, it displays it on a LCD screen. It is designed to work with an LCD display driven by the `LCDWIKI_KBV` library. The baud rate can be set by pressing a button.
 
 ## Requirements
 
