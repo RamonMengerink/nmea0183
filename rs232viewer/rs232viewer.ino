@@ -20,6 +20,7 @@ unsigned long baudRates[] = {4800, 9600, 38400};
 int numBaudRates = sizeof(baudRates) / sizeof(baudRates[0]);
 int buttonState = LOW;
 int prevButtonState = LOW;
+int characterCount = 0;
 
 String strReceived;
 
@@ -85,11 +86,15 @@ void send(){
 }
 
 void readData() {
-  static int line = 0;
-  char incomingByte = Serial1.read();
-  Serial.print("Received: ");
-  Serial.println(incomingByte);
-  
+  while (Serial1.available() > 0){
+    char incomingByte = Serial1.read();
+    if (characterCount > 15){
+      characterCount = 0;
+      Serial.println("");
+    }
+    Serial.print(incomingByte);
+    characterCount++;
+  }
 
 
   /*
