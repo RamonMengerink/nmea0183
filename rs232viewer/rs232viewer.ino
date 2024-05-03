@@ -1,4 +1,4 @@
-#include <LCDWIKI_GUI.h>
+//#include <LCDWIKI_GUI.h>
 #include <LCDWIKI_KBV.h>
 
 LCDWIKI_KBV mylcd(ILI9486, A3,A2,A1,A0,A4); //model,cs,cd,wr,rd,reset
@@ -15,8 +15,8 @@ LCDWIKI_KBV mylcd(ILI9486, A3,A2,A1,A0,A4); //model,cs,cd,wr,rd,reset
 
 
 int button = 53;
-int baudCount = 4;
-unsigned long baudRates[] = {300, 600, 1200, 2400, 4800, 9600, 14400, 19200, 28800, 31250, 38400, 57600, 115200};
+int baudCount = 0;
+unsigned long baudRates[] = {4800, 9600, 38400};
 int numBaudRates = sizeof(baudRates) / sizeof(baudRates[0]);
 int buttonState = LOW;
 int prevButtonState = LOW;
@@ -45,12 +45,11 @@ void setup() {
   ultoa(baudRate, ChrBaudRate, 10);
   mylcd.Print(ChrBaudRate, 130 , 10);  
   Serial2.begin(4800);
-
+  Serial.begin(9600);
 }
 
-void loop() {
-  
-  
+
+void loop() { 
   buttonState = digitalRead(button);
 
   // Check if button is pressed and has transitioned from HIGH to LOW
@@ -87,7 +86,16 @@ void send(){
 
 void readData() {
   static int line = 0;
+  char incomingByte = Serial1.read();
+  Serial.print("Received: ");
+  Serial.println(incomingByte);
+  
+
+
+  /*
   while (Serial1.available()) {
+    
+    
     strReceived = Serial1.readStringUntil('\n'); //read the incoming data as string
     
 
@@ -103,5 +111,7 @@ void readData() {
     // Print the C-style string
     mylcd.Fill_Rect(00, line*15+30, 1000, 15, CYAN);
     mylcd.Print(charArray, 10, line*15+30);
+    
   }
+  */
 }
