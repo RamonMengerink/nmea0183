@@ -1,4 +1,4 @@
-//#include <LCDWIKI_GUI.h>
+#include <LCDWIKI_GUI.h>
 #include <LCDWIKI_KBV.h>
 
 LCDWIKI_KBV mylcd(ILI9486, A3,A2,A1,A0,A4); //model,cs,cd,wr,rd,reset
@@ -21,6 +21,7 @@ int numBaudRates = sizeof(baudRates) / sizeof(baudRates[0]);
 int buttonState = LOW;
 int prevButtonState = LOW;
 int characterCount = 0;
+long int baudRate = 4800;
 
 String strReceived;
 
@@ -36,16 +37,17 @@ void setup() {
   mylcd.Set_Text_Mode(1);             //Text howit's Displayed
 
   mylcd.Print("RME \n Ramon Mengerink Engineering \n www.rm-e.nl +31 642810591", 10, 50);  //Numbers = across, down
-  delay(10000);
+  delay(1000);
+
   mylcd.Fill_Screen(CYAN);
 
-  long int baudRate = 4800;
   Serial1.begin(baudRate);
+  
   mylcd.Print("Baud rate: ", 10, 10);        // Print the label
   char ChrBaudRate[7];
   ultoa(baudRate, ChrBaudRate, 10);
   mylcd.Print(ChrBaudRate, 130 , 10);  
-  Serial2.begin(4800);
+  Serial.begin(4800);
   Serial.begin(9600);
 }
 
@@ -85,38 +87,35 @@ void send(){
   Serial2.println("test test");
 }
 
+int posVert = 2;
+int posHori = 1;
+
 void readData() {
   while (Serial1.available() > 0){
-    char incomingByte = Serial1.read();
-    if (characterCount > 15){
-      characterCount = 0;
-      Serial.println("");
-    }
-    Serial.print(incomingByte);
-    characterCount++;
-  }
-
-
-  /*
-  while (Serial1.available()) {
+    char charReceived = Serial1.read();
     
-    
-    strReceived = Serial1.readStringUntil('\n'); //read the incoming data as string
-    
-
-    // Convert String to C-style string
-    char charArray[strReceived.length() + 1]; // +1 for null terminator
-    strReceived.toCharArray(charArray, sizeof(charArray));
-    
-    line = (line + 1) % 15;
-    if (line == 0) {
-      //mylcd.Fill_Rect(00, 30, 1000, 1000, CYAN);    // Clear the previous line
+    if (charReceived == '\n'){ // new line
+      posVert++;
+      posHori = 1;
+      mylcd.Fill_Rect(0, posVert*20, 1000, 20, CYAN);    // Clear the previous line
+    }else{
+      posHori++;
     }
     
-    // Print the C-style string
-    mylcd.Fill_Rect(00, line*15+30, 1000, 15, CYAN);
-    mylcd.Print(charArray, 10, line*15+30);
-    
+    if (posHori > 40){    // new line
+      posVert++;
+      posHori = 1;
+      mylcd.write('\n');
+      mylcd.Fill_Rect(0, posVert*20, 1000, 20, CYAN);    // Clear the previous line
+    }
+
+    if (posVert > 15){ // Start from top
+      posVert = 2;
+      posHori = 1;
+      mylcd.Fill_Rect(0, posVert*20, 1000, 20, CYAN);    // Clear the previous line
+    }
+
+    mylcd.Set_Text_Cousur(posHori*12, posVert*20);
+    mylcd.write(charReceived);
   }
-  */
 }
